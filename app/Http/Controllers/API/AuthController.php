@@ -187,9 +187,9 @@ class AuthController extends Controller
             'email'         => 'required|email',
             'new_password'  => 'required|min:6|confirmed',
         ]);
-
+    
         $user = User::where('email', $request->email)->first();
-
+    
         if (!$user) {
             return response()->json([
                 'code'    => 404,
@@ -197,20 +197,17 @@ class AuthController extends Controller
                 'message' => 'User not found.',
             ], 404);
         }
-
-        $user->tokens->each(function ($token) {
-            $token->delete();
-        });
-
+    
         $user->password = Hash::make($request->new_password);
         $user->save();
-
+    
         DB::table('password_resets')->where('email', $request->email)->delete();
-
+    
         return response()->json([
             'code'    => 200,
             'status'  => true,
             'message' => 'Password has been reset successfully. Please log in again.',
         ], 200);
     }
+    
 }
